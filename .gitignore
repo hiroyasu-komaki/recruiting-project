@@ -1,0 +1,37 @@
+# General
+*.log
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+env/
+venv/
+
+# Node.js
+node_modules/
+
+# Java
+*.class
+target/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+
+# VSCode files
+.vscode/
+*.code-workspace
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# PII Data
+input/
+output/
+error/

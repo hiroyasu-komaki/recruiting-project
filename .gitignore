@@ -33,5 +33,5 @@ Thumbs.db
 
 # PII Data
 input/
-output/
+# output/
 error/

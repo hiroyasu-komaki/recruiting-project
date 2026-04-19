@@ -31,7 +31,17 @@ Thumbs.db
 *.swo
 *~
 
-# PII Data
+# Environment Variables & Secrets (CRITICAL)
+.env
+.env.*
+*.pem
+
+# PII Data & Screening Results
 input/
-# output/
 error/
+json/candidates*
+# output/
+
+# Data Export (Optional/Future-proof)
+*.csv
+*.xlsx

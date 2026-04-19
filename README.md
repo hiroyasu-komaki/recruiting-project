@@ -9,12 +9,18 @@
 ```
 recruiting_project/
 ├── input/                  # 候補者CVファイルを配置（処理対象はPDFのみ）
-├── job-descriptions/       # 募集職種ごとの募集要項（Markdownファイル）
+├── job-descriptions/       # 募集職種ごとの募集要項（*_job-description.md）
 ├── output/                 # スクリーニングレポートの出力先
 ├── error/                  # 非PDFファイルの隔離先
+├── json/                   # 前処理・マッピング結果の中間JSONファイル
+├── src/                    # 前処理Pythonスクリプト群
+│   ├── preprocess.py       # PDF抽出・非PDF仕分け
+│   ├── load_context.py     # 募集要項・テンプレート読み込み
+│   └── map_context.py      # 募集要項の構造化マッピング
 ├── templates/
 │   ├── screening-report-template.md   # レポートの体裁・章立て基準
-│   └── evaluation-rubric.md           # A〜D評価の定義・判定基準
+│   ├── evaluation-rubric.md           # A〜D評価の定義・判定基準
+│   └── job-description-template.json  # 募集要項の構造化スキーマ
 └── .claude/commands/
     └── cv-screening.md     # /cv-screening スキル定義
 ```
@@ -23,7 +29,7 @@ recruiting_project/
 
 1. `input/` フォルダに候補者のCVファイル（PDF）を配置する
 2. Claude Codeで `/cv-screening` を実行する
-3. 評価対象職種の一覧が表示されるので、実行可否を確認する
+3. 候補者数・評価対象職種の一覧が表示されるので `yes` / `no` で実行可否を回答する
 4. `output/` に生成されたレポートを確認する
 
 ## 規約
@@ -45,9 +51,9 @@ recruiting_project/
 
 `templates/evaluation-rubric.md` に定義。
 
-| 評価 | ラベル | 基準 |
-|------|--------|------|
-| A | 強く推薦 | 必須要件の全項目平均3.5以上、かつスコア2以下なし |
-| B | 推薦 | 必須要件の全項目平均3.0超（Aの基準は満たさない） |
-| C | 条件付き推薦 | 必須要件の全項目平均2.5以上3.0以下、またはスコア1・2を含む |
-| D | 見送り推奨 | 必須要件の全項目平均2.5未満 |
+| 評価 | ラベル | 判定基準 | 採用アクション |
+|------|--------|---------|--------------|
+| A | 強く推薦 | 平均3.5以上、スコア1が1件以内、スコア2が1件以内 | 最優先で採用を前向きに検討。即面接設定 |
+| B | 推薦 | 平均3.0超、スコア1が1件以内、スコア2が3件以内（A基準は満たさない） | 優先的に面接日程を調整 |
+| C | 条件付き推薦 | 平均2.5以上（A・B基準を満たさない） | 通常の選考プロセスで見極め |
+| D | 見送り推奨 | 平均2.5未満 | 見送り推奨 |

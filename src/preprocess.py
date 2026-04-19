@@ -66,10 +66,15 @@ def main():
             reader = PdfReader(str(pdf_path))
             text = "\n".join(page.extract_text() or "" for page in reader.pages)
 
-            # 1. 日本語文字の間にある不自然な改行を削除（連続する改行は段落として残す）
-            # 2. 日本語文字の間にある不自然な半角スペースも削除する場合（オプション）
-            text = re.sub(r'([ぁ-んァ-ヶ亜-熙])\n([ぁ-んァ-ヶ亜-熙])', r'\1\2', text)
-            text = re.sub(r'([ぁ-んァ-ヶ亜-熙])\s+([ぁ-んァ-ヶ亜-熙])', r'\1\2', text)
+            # 日本語文字間の不要な改行を削除（連鎖する改行に対応するためループで安定するまで繰り返す）
+            # ひらがな全域・カタカナ全域(ーを含む U+30A0-U+30FF)・CJK統合漢字全域(U+4E00-U+9FFF)を対象とする
+            JP = r'[\u3041-\u3096\u30a0-\u30ff\u4e00-\u9fff]'
+            prev = None
+            while prev != text:
+                prev = text
+                text = re.sub(JP + r'\n' + JP, lambda m: m.group(0).replace('\n', ''), text)
+            # 日本語文字間の不要なスペースを削除（段落区切りの\n\nを壊さないよう空白のみ対象）
+            text = re.sub(JP + r' +' + JP, lambda m: m.group(0).replace(' ', ''), text)
 
             candidate_id = _unique_id(used_ids)
             candidates.append({
